@@ -376,7 +376,16 @@
   .confetti { position: fixed; top: -20px; z-index: 15; pointer-events: none; animation: fall linear forwards; }
   @keyframes fall { to { transform: translateY(110vh) rotate(900deg); } }
 
-  footer { text-align: center; font-weight: 700; font-size: .85rem; opacity: .75; padding: 0 16px 32px; }
+  footer {
+    text-align: center; font-weight: 600; font-size: .88rem; line-height: 1.5;
+    max-width: 640px; margin: 0 auto 32px; padding: 14px 18px;
+    background: var(--ink); border: 3px solid var(--yellow); border-radius: 16px;
+  }
+  @media (max-width: 680px) { footer { margin: 0 16px 32px; } }
+  footer p { margin: 0 0 6px; }
+  footer p:last-child { margin: 0; opacity: .75; }
+  footer a { color: var(--yellow); }
+  footer a:hover { color: var(--white); }
   .hidden { display: none !important; }
 
   @media (max-width: 520px) {
@@ -516,7 +525,11 @@
   </section>
 </main>
 
-<footer>Made for fun. Not affiliated with LinkedIn.</footer>
+<footer>
+  <p>🔒 Your Connections.csv is read only inside this browser tab. It's never uploaded, sent anywhere, or saved.
+    Don't just take our word for it: <a href="https://github.com/paulajgriffin/li-roulette" target="_blank" rel="noopener">read the source code on GitHub</a>.</p>
+  <p>Made for fun. Not affiliated with LinkedIn.</p>
+</footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
