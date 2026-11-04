@@ -124,6 +124,23 @@
   .howto summary { cursor: pointer; font-weight: 800; }
   .howto ol { margin: 8px 0 0; padding-left: 22px; line-height: 1.6; }
   .privacy { margin: 14px 0 0; font-weight: 700; font-size: .9rem; }
+  .confirm-bar {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+    margin-top: 14px; padding: 12px 14px;
+    background: #fff3b8; border: 3px solid var(--ink); border-radius: 14px;
+    font-weight: 700;
+  }
+  .confirm-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .or-divider {
+    display: flex; align-items: center; gap: 12px; margin: 16px 0;
+    font-family: var(--display); font-size: .85rem;
+  }
+  .or-divider::before, .or-divider::after { content: ""; flex: 1; border-top: 3px dashed var(--purple); }
+  .sample-tag {
+    font-family: var(--display); font-size: .7rem;
+    background: var(--cyan); padding: 2px 8px; border-radius: 6px; border: 2px solid var(--ink);
+    margin-left: 6px; vertical-align: 1px;
+  }
   .error {
     margin-top: 14px; padding: 10px 14px; border-radius: 12px;
     background: var(--red); color: var(--white); border: 3px solid var(--ink); font-weight: 700;
@@ -394,6 +411,8 @@
       </ol>
     </details>
     <p class="privacy">🔒 Your file never leaves this browser tab. Nothing is uploaded or saved.</p>
+    <div class="or-divider"><span>or</span></div>
+    <button class="btn cyan" id="useSample">🎭 Play with sample data instead</button>
   </section>
 
   <!-- Game -->
@@ -421,6 +440,13 @@
           <button class="linkish" id="clear">Clear filters</button>
           &nbsp;·&nbsp;
           <button class="linkish" id="newFile">New file</button>
+        </span>
+      </div>
+      <div class="confirm-bar hidden" id="newFileConfirm" role="alert">
+        <span>Loading a new file clears your Hall of Fame and Chickens of Shame.</span>
+        <span class="confirm-actions">
+          <button class="btn small pink" id="newFileYes">Clear &amp; load new file</button>
+          <button class="btn small" id="newFileNo">Cancel</button>
         </span>
       </div>
     </div>
@@ -498,6 +524,21 @@
   let reached = []; // { person, wedge, challenge (plain text), at: Date }, newest first
   let chickened = []; // same shape: people you chickened out on, newest first
   const score = { spins: 0, done: 0, chicken: 0 };
+
+  let usingSample = false;
+
+  // Same people as sample-connections.csv, built in so the sample works even when
+  // index.html is opened straight from disk. Profile URLs are left blank on purpose:
+  // made-up linkedin.com/in/… links could point at real strangers.
+  const SAMPLE_CSV = `First Name,Last Name,URL,Email Address,Company,Position,Connected On
+Ada,Lovelace,,,Analytical Engines Ltd,Software Engineer,15 Mar 2023
+Grace,Hopper,,,US Navy,"Rear Admiral, Computing",02 Jan 2019
+Alan,Turing,,,Bletchley Park,Cryptanalyst,28 Jun 2021
+Katherine,Johnson,,,NASA,Mathematician,11 Aug 2023
+Linus,Example,,,Google,Engineering Manager,04 Nov 2024
+Margaret,Hamilton,,,NASA,Director of Software Engineering,19 Sep 2020
+Tim,Berners,,,,,01 Feb 2025
+Radia,Perlman,,,Google,Founder & Engineer,23 May 2024`;
 
   const $ = (id) => document.getElementById(id);
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -625,6 +666,7 @@
       ? `<span class="num">${total}</span> on the wheel`
       : `<span class="num">${n.toLocaleString()}</span> of ${total} on the wheel`;
     if (n === 0) $("count").innerHTML += " · loosen those filters!";
+    if (usingSample) $("count").innerHTML += `<span class="sample-tag">SAMPLE DATA</span>`;
     $("spin").disabled = n === 0 || spinning;
   }
 
@@ -969,27 +1011,33 @@
     const err = $("error");
     err.classList.add("hidden");
     const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        people = loadConnections(reader.result);
-        lastPick = null;
-        reached = [];
-        chickened = [];
-        Object.assign(score, { spins: 0, done: 0, chicken: 0 });
-        renderScore(); renderReached(); renderChickens();
-        populateFilters();
-        $("upload").classList.add("hidden");
-        $("game").classList.remove("hidden");
-        $("result").innerHTML = "";
-        $("marqueeName").textContent = "Who will it be?";
-        updateCount();
-        toast(`${people.length.toLocaleString()} contestants loaded! Let's play!`);
-      } catch (e) {
-        err.textContent = e.message;
-        err.classList.remove("hidden");
-      }
-    };
+    reader.onload = () => startGame(reader.result, false);
     reader.readAsText(file);
+  }
+
+  function startGame(csvText, sample) {
+    const err = $("error");
+    try {
+      people = loadConnections(csvText);
+      usingSample = sample;
+      lastPick = null;
+      reached = [];
+      chickened = [];
+      Object.assign(score, { spins: 0, done: 0, chicken: 0 });
+      renderScore(); renderReached(); renderChickens();
+      populateFilters();
+      $("upload").classList.add("hidden");
+      $("game").classList.remove("hidden");
+      $("result").innerHTML = "";
+      $("marqueeName").textContent = "Who will it be?";
+      updateCount();
+      toast(sample
+        ? "Playing with sample contestants! Load your own file anytime."
+        : `${people.length.toLocaleString()} contestants loaded! Let's play!`);
+    } catch (e) {
+      err.textContent = e.message;
+      err.classList.remove("hidden");
+    }
   }
 
   buildWheel();
@@ -1004,13 +1052,25 @@
   $("fYear").addEventListener("change", updateCount);
   $("skipReached").addEventListener("change", updateCount);
   $("clear").onclick = () => { $("fTitle").value = ""; $("fCompany").value = ""; $("fYear").value = ""; updateCount(); };
-  $("newFile").onclick = () => {
-    if ((reached.length || chickened.length) && !confirm("Loading a new file clears your Hall of Fame and Chickens of Shame. Continue?")) return;
+  // In-page confirmation instead of window.confirm(), which some browsers and
+  // embedded views block (it silently returns false there).
+  function goToUpload() {
+    $("newFileConfirm").classList.add("hidden");
     people = [];
     $("file").value = "";
     $("game").classList.add("hidden");
     $("upload").classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+  }
+  $("newFile").onclick = () => {
+    if (reached.length || chickened.length) {
+      $("newFileConfirm").classList.remove("hidden");
+      $("newFileYes").focus();
+    } else goToUpload();
   };
+  $("newFileYes").onclick = goToUpload;
+  $("newFileNo").onclick = () => $("newFileConfirm").classList.add("hidden");
+  $("useSample").onclick = () => { $("error").classList.add("hidden"); startGame(SAMPLE_CSV, true); };
   $("spin").onclick = spin;
   document.addEventListener("keydown", e => {
     if (e.code === "Space" && !$("game").classList.contains("hidden") && !/INPUT|SELECT|TEXTAREA|BUTTON|^A$/.test(document.activeElement.tagName)) {
