@@ -1,0 +1,12 @@
+Notes:
+"When exporting your connection data, you may notice that some of the email addresses are missing. You will only see email addresses for connections who have allowed their connections to see or download their email address."
+
+First Name,Last Name,URL,Email Address,Company,Position,Connected On
+Ada,Lovelace,https://www.linkedin.com/in/example-ada,,Analytical Engines Ltd,Software Engineer,15 Mar 2023
+Grace,Hopper,https://www.linkedin.com/in/example-grace,,US Navy,"Rear Admiral, Computing",02 Jan 2019
+Alan,Turing,https://www.linkedin.com/in/example-alan,,Bletchley Park,Cryptanalyst,28 Jun 2021
+Katherine,Johnson,https://www.linkedin.com/in/example-katherine,,NASA,Mathematician,11 Aug 2023
+Linus,Example,https://www.linkedin.com/in/example-linus,,Google,Engineering Manager,04 Nov 2024
+Margaret,Hamilton,https://www.linkedin.com/in/example-margaret,,NASA,Director of Software Engineering,19 Sep 2020
+Tim,Berners,https://www.linkedin.com/in/example-tim,,,,01 Feb 2025
+Radia,Perlman,https://www.linkedin.com/in/example-radia,,Google,Founder & Engineer,23 May 2024

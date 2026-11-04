@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LinkedIn Roulette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1b1464;
+    --purple: #4b1fb8;
+    --purple-2: #5e2ed6;
+    --pink: #ff2e93;
+    --yellow: #ffd400;
+    --cyan: #00c8f0;
+    --lime: #7ee81b;
+    --orange: #ff7a00;
+    --red: #ff3b30;
+    --teal: #00c2a8;
+    --white: #ffffff;
+    --paper: #fffaf0;
+    --display: "Bungee", "Impact", sans-serif;
+    --body: "Rubik", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    font-family: var(--body);
+    color: var(--white);
+    background-color: var(--purple);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M20 40 q10 -14 20 0 t20 0 t20 0' stroke='%23ffd400'/%3E%3Cpath d='M150 170 q10 -14 20 0 t20 0 t20 0' stroke='%2300c8f0'/%3E%3Cpath d='M170 40 l18 30 h-36 z' stroke='%23ff2e93'/%3E%3Ccircle cx='60' cy='180' r='12' stroke='%237ee81b'/%3E%3C/g%3E%3Cg fill='%23ffffff' opacity='.5'%3E%3Ccircle cx='120' cy='110' r='3'/%3E%3Ccircle cx='215' cy='115' r='3'/%3E%3Ccircle cx='100' cy='220' r='3'/%3E%3C/g%3E%3C/svg%3E"),
+      repeating-conic-gradient(from 0deg at 50% 0%, var(--purple) 0deg 8deg, var(--purple-2) 8deg 16deg);
+    background-attachment: fixed;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 28px 16px 72px; }
+
+  /* ---------- Title ---------- */
+  header { text-align: center; margin-bottom: 28px; }
+  .title {
+    display: inline-block;
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2.3rem, 9vw, 4.6rem);
+    line-height: .95;
+    margin: 0;
+    color: var(--yellow);
+    transform: rotate(-4deg);
+    text-shadow:
+      1px 1px 0 var(--pink), 2px 2px 0 var(--pink), 3px 3px 0 var(--pink), 4px 4px 0 var(--pink),
+      5px 5px 0 var(--pink), 6px 6px 0 var(--pink), 7px 7px 0 var(--ink), 8px 8px 0 var(--ink),
+      9px 9px 0 var(--ink), 10px 10px 14px rgba(0,0,0,.35);
+    -webkit-text-stroke: 2px var(--ink);
+    paint-order: stroke fill;
+  }
+  .title small {
+    display: block; font-size: .38em; color: var(--cyan); letter-spacing: .04em; margin-bottom: 6px;
+    -webkit-text-stroke: 1px var(--ink);
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+  .tagline {
+    display: inline-block;
+    margin: 22px 0 0;
+    font-weight: 700; font-size: 1.05rem;
+    background: var(--ink); padding: 6px 16px; border-radius: 999px;
+    border: 3px solid var(--yellow);
+  }
+
+  /* ---------- Panels & buttons ---------- */
+  .panel {
+    background: var(--paper);
+    color: var(--ink);
+    border: 4px solid var(--ink);
+    border-radius: 22px;
+    box-shadow: 0 8px 0 var(--ink), 0 14px 30px rgba(0,0,0,.25);
+    padding: 22px;
+    margin-bottom: 28px;
+  }
+  .panel-title {
+    font-family: var(--display); font-weight: 400; font-size: 1.5rem; margin: 0 0 6px; line-height: 1.1;
+  }
+  .btn {
+    font-family: var(--display); font-weight: 400; font-size: .95rem; letter-spacing: .02em;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 3px solid var(--ink);
+    box-shadow: 0 5px 0 var(--ink);
+    background: linear-gradient(180deg, #fff 0%, #e8e4ff 100%);
+    color: var(--ink);
+    cursor: pointer; text-decoration: none;
+    transition: transform .07s, box-shadow .07s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 var(--ink); }
+  .btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--ink); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: 0 5px 0 var(--ink); }
+  .btn.yellow { background: linear-gradient(180deg, #fff27a, var(--yellow)); }
+  .btn.pink { background: linear-gradient(180deg, #ff7cbc, var(--pink)); color: var(--white); text-shadow: 0 2px 0 rgba(0,0,0,.25); }
+  .btn.cyan { background: linear-gradient(180deg, #8cecff, var(--cyan)); }
+  .btn.lime { background: linear-gradient(180deg, #c3ff7a, var(--lime)); }
+  .btn.small { font-size: .8rem; padding: 7px 13px; box-shadow: 0 4px 0 var(--ink); }
+  .btn:focus-visible, input:focus-visible, select:focus-visible, .drop:focus-within { outline: 4px solid var(--cyan); outline-offset: 3px; }
+
+  /* ---------- Upload ---------- */
+  .upload { text-align: center; }
+  .drop {
+    display: block;
+    margin-top: 16px;
+    padding: 34px 16px;
+    border: 4px dashed var(--purple);
+    border-radius: 18px;
+    background: repeating-linear-gradient(45deg, #fff, #fff 14px, #fff3b8 14px, #fff3b8 28px);
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  .drop:hover, .drop.over { transform: scale(1.02) rotate(-.5deg); }
+  .drop input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .drop .big { display: block; font-family: var(--display); font-size: 1.3rem; margin-bottom: 14px; }
+  .drop .btn { pointer-events: none; }
+  .howto { text-align: left; margin-top: 16px; font-size: .95rem; }
+  .howto summary { cursor: pointer; font-weight: 800; }
+  .howto ol { margin: 8px 0 0; padding-left: 22px; line-height: 1.6; }
+  .privacy { margin: 14px 0 0; font-weight: 700; font-size: .9rem; }
+  .error {
+    margin-top: 14px; padding: 10px 14px; border-radius: 12px;
+    background: var(--red); color: var(--white); border: 3px solid var(--ink); font-weight: 700;
+  }
+
+  /* ---------- Filters ---------- */
+  .filters { display: grid; grid-template-columns: 1fr 1fr 170px; gap: 14px; }
+  @media (max-width: 640px) { .filters { grid-template-columns: 1fr; } }
+  label.f { display: block; font-family: var(--display); font-size: .78rem; margin-bottom: 5px; }
+  input[type=text], select {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 3px solid var(--ink);
+    background: var(--white);
+    color: var(--ink);
+    font: 500 1rem var(--body);
+  }
+  .filter-meta {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-top: 14px; font-weight: 700; font-size: .95rem;
+  }
+  .count .num {
+    font-family: var(--display); background: var(--yellow); padding: 1px 9px; border-radius: 8px; border: 2px solid var(--ink);
+  }
+  .toggle { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+  .toggle input { width: 18px; height: 18px; accent-color: var(--pink); }
+  .linkish { background: none; border: none; padding: 0; font: 700 .95rem var(--body); color: var(--purple); text-decoration: underline; cursor: pointer; }
+
+  /* ---------- Stage: marquee + wheel ---------- */
+  .stage { text-align: center; margin-bottom: 28px; }
+
+  .marquee {
+    position: relative;
+    max-width: 680px; margin: 0 auto 30px;
+    padding: 14px;
+    border-radius: 20px;
+    background-color: var(--red);
+    background-image:
+      radial-gradient(circle, #fffbd1 0 3.5px, #ffd400 4.5px, transparent 5.5px),
+      radial-gradient(circle, #fff 0 3.5px, #ff9fd0 4.5px, transparent 5.5px);
+    background-size: 22px 22px, 22px 22px;
+    background-position: 0 0, 11px 11px;
+    border: 4px solid var(--ink);
+    box-shadow: 0 8px 0 var(--ink), 0 0 40px rgba(255,212,0,.35);
+    animation: chase .5s steps(1) infinite;
+  }
+  @keyframes chase {
+    0%   { background-position: 0 0, 11px 11px; }
+    50%  { background-position: 11px 11px, 0 0; }
+  }
+  .marquee-inner {
+    background: var(--ink);
+    border: 3px solid var(--yellow);
+    border-radius: 10px;
+    padding: 16px 16px 20px;
+  }
+  .marquee-label { font-family: var(--display); font-size: .78rem; color: var(--cyan); letter-spacing: .08em; }
+  .marquee-name {
+    font-family: var(--display);
+    font-size: clamp(1.6rem, 7vw, 3rem);
+    line-height: 1.15;
+    color: var(--yellow);
+    text-shadow: 0 0 12px rgba(255,212,0,.6), 3px 3px 0 var(--pink);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    min-height: 1.2em;
+  }
+  .marquee.spinning .marquee-name { color: var(--white); text-shadow: 0 0 10px rgba(255,255,255,.6); }
+
+  .wheel-wrap {
+    position: relative;
+    width: min(290px, 72vw);
+    aspect-ratio: 1;
+    margin: 0 auto;
+  }
+  .wheel-spin {
+    position: absolute; inset: 0;
+    transition: transform var(--dur, 4.2s) cubic-bezier(.12, .9, .22, 1);
+    will-change: transform;
+  }
+  .wheel-spin svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .wheel-label {
+    font-family: var(--display);
+    font-size: 6.8px;
+    fill: var(--white);
+    stroke: var(--ink);
+    stroke-width: 1.4px;
+    paint-order: stroke fill;
+    letter-spacing: .2px;
+  }
+  .bulb { fill: #fff6b0; }
+  .bulb.alt { fill: #ff9fd0; }
+  .wheel-wrap.lit .bulb { animation: blink .35s steps(1) infinite; }
+  .wheel-wrap.lit .bulb.alt { animation-delay: .175s; }
+  @keyframes blink { 50% { fill: #5a3a00; } }
+  .pointer {
+    position: absolute; left: 50%; top: -13px; width: 38px; height: 45px; transform: translateX(-50%);
+    z-index: 2; filter: drop-shadow(0 4px 0 var(--ink));
+  }
+  .pointer.tick { animation: tick .12s ease-out; }
+  @keyframes tick { 50% { transform: translateX(-50%) rotate(-14deg); } }
+
+  .spin-btn {
+    margin-top: 22px;
+    font-family: var(--display); font-size: clamp(1.4rem, 5vw, 1.9rem);
+    padding: 14px 54px 16px;
+    border-radius: 999px;
+    border: 4px solid var(--ink);
+    color: var(--ink);
+    background: linear-gradient(180deg, #fff9a8 0%, var(--yellow) 45%, #ffb300 100%);
+    box-shadow: 0 8px 0 var(--ink), 0 14px 26px rgba(0,0,0,.3), inset 0 -6px 0 rgba(0,0,0,.08);
+    cursor: pointer;
+    transition: transform .07s, box-shadow .07s;
+  }
+  .spin-btn:hover { transform: translateY(-3px) rotate(-1deg); box-shadow: 0 11px 0 var(--ink), 0 16px 30px rgba(0,0,0,.3); }
+  .spin-btn:active { transform: translateY(6px); box-shadow: 0 2px 0 var(--ink); }
+  .spin-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .hint { margin: 14px 0 0; font-weight: 700; font-size: .9rem; opacity: .85; }
+  kbd { font-family: var(--display); font-size: .75rem; padding: 2px 7px; border-radius: 6px; border: 2px solid var(--white); }
+
+  /* ---------- Result card ---------- */
+  .card { position: relative; animation: pop .5s cubic-bezier(.2, 1.6, .4, 1); }
+  @keyframes pop { from { transform: scale(.7) rotate(-4deg); opacity: 0; } to { transform: none; opacity: 1; } }
+  .starburst {
+    position: absolute; top: -26px; right: -14px;
+    width: 96px; height: 96px;
+    display: grid; place-items: center; text-align: center;
+    font-family: var(--display); font-size: .78rem; line-height: 1.05; color: var(--ink);
+    background: var(--yellow);
+    clip-path: polygon(50% 0%, 61% 18%, 82% 10%, 79% 32%, 100% 38%, 84% 54%, 97% 72%, 75% 74%, 72% 96%, 54% 84%, 36% 100%, 30% 79%, 9% 85%, 15% 63%, 0% 50%, 16% 36%, 6% 16%, 28% 18%, 36% 0%);
+    transform: rotate(12deg);
+    animation: throb 1.2s ease-in-out infinite;
+  }
+  @keyframes throb { 50% { transform: rotate(12deg) scale(1.08); } }
+  .card .eyebrow { font-family: var(--display); font-size: .8rem; color: var(--pink); }
+  .card h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.6rem, 6vw, 2.2rem); margin: 2px 0 4px; line-height: 1.05; padding-right: 70px; }
+  .card .role { margin: 0; font-weight: 700; }
+  .card .since { margin: 2px 0 0; font-size: .92rem; color: #4b4680; }
+  .challenge {
+    margin: 18px 0 20px;
+    padding: 16px 18px;
+    border: 3px solid var(--ink);
+    border-radius: 16px;
+    background: #fff;
+    font-size: 1.15rem; font-weight: 500;
+    box-shadow: inset 0 -5px 0 #ece8ff;
+  }
+  .wedge-tag {
+    display: inline-block;
+    font-family: var(--display); font-size: .78rem; color: var(--white);
+    padding: 3px 10px; border-radius: 8px; border: 2px solid var(--ink);
+    text-shadow: 1px 1px 0 var(--ink);
+    margin-bottom: 8px;
+  }
+  .challenge strong { background: var(--yellow); padding: 0 4px; border-radius: 4px; }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* ---------- Scoreboard ---------- */
+  .scoreboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 28px; }
+  .stat {
+    background: var(--ink);
+    border: 4px solid var(--yellow);
+    border-radius: 16px;
+    padding: 12px 8px 10px;
+    text-align: center;
+    box-shadow: 0 6px 0 rgba(0,0,0,.35);
+  }
+  .stat strong {
+    display: block;
+    font-family: var(--display); font-weight: 400; font-size: 2.2rem; line-height: 1;
+    color: var(--yellow); text-shadow: 0 0 10px rgba(255,212,0,.55);
+  }
+  .stat:nth-child(2) strong { color: var(--lime); text-shadow: 0 0 10px rgba(126,232,27,.5); }
+  .stat:nth-child(3) strong { color: var(--pink); text-shadow: 0 0 10px rgba(255,46,147,.5); }
+  .stat span { font-family: var(--display); font-size: .7rem; letter-spacing: .05em; }
+
+  /* ---------- Hall of fame ---------- */
+  .list-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .list-head p { margin: 0; font-size: .92rem; color: #4b4680; }
+  .list-actions { display: flex; gap: 10px; }
+  .reached { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .reached li {
+    display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center;
+    background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 12px 14px;
+  }
+  .reached li:nth-child(odd) { background: #fff8d6; }
+  .reached .who { min-width: 0; }
+  .reached .who b { font-family: var(--display); font-weight: 400; font-size: 1rem; }
+  .reached .who a { color: var(--ink); }
+  .reached .meta { font-size: .86rem; color: #4b4680; }
+  .reached .what { font-size: .92rem; margin-top: 4px; }
+  .reached .wedge-tag { font-size: .62rem; padding: 1px 6px; margin: 0 6px 0 0; vertical-align: 1px; }
+  .reached .remove {
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 3px solid var(--ink); background: var(--white); color: var(--ink);
+    font-weight: 800; cursor: pointer;
+  }
+  .reached .remove:hover { background: var(--red); color: var(--white); }
+  .shame { background: #ffe6f2; }
+  .shame .reached li:nth-child(odd) { background: #fff; }
+  .shame .reached li:nth-child(even) { background: #ffd1e8; }
+  .shame .empty { border-color: var(--pink); }
+  .chicken-drop {
+    position: fixed; top: -30px; z-index: 15; pointer-events: none; line-height: 1;
+    animation: fall linear forwards;
+  }
+
+  .empty {
+    text-align: center; padding: 22px;
+    border: 3px dashed var(--purple); border-radius: 14px;
+    font-weight: 700;
+  }
+
+  /* ---------- Toast + confetti ---------- */
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 160%);
+    max-width: calc(100% - 32px);
+    background: var(--pink); color: var(--white);
+    font-family: var(--display); font-size: .95rem;
+    border: 4px solid var(--ink); box-shadow: 0 6px 0 var(--ink);
+    padding: 12px 22px; border-radius: 999px;
+    transition: transform .3s cubic-bezier(.2, 1.6, .4, 1); z-index: 20;
+    text-shadow: 1px 1px 0 var(--ink);
+  }
+  .toast.show { transform: translate(-50%, 0); }
+  .confetti { position: fixed; top: -20px; z-index: 15; pointer-events: none; animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(900deg); } }
+
+  footer { text-align: center; font-weight: 700; font-size: .85rem; opacity: .75; padding: 0 16px 32px; }
+  .hidden { display: none !important; }
+
+  @media (max-width: 520px) {
+    .panel { padding: 18px; }
+    .scoreboard { gap: 8px; }
+    .stat strong { font-size: 1.7rem; }
+    .stat span { font-size: .6rem; }
+    .starburst { width: 78px; height: 78px; font-size: .64rem; top: -22px; right: -8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee, .starburst, .wheel-wrap.lit .bulb { animation: none !important; }
+    .card, .toast { animation: none; transition: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1 class="title"><small>It's time to play</small>LinkedIn Roulette!</h1>
+    <div><p class="tagline">Spin the wheel ✦ win a reason to say hi</p></div>
+  </header>
+
+  <!-- Upload -->
+  <section id="upload" class="panel upload">
+    <h2 class="panel-title">Step right up!</h2>
+    <p style="margin:0">Load your <b>Connections.csv</b> to fill the wheel with real people.</p>
+    <label class="drop" id="drop">
+      <input type="file" id="file" accept=".csv,text/csv">
+      <span class="big">📂 Drop Connections.csv here</span>
+      <span class="btn pink">Choose a file</span>
+    </label>
+    <div class="error hidden" id="error" role="alert"></div>
+    <details class="howto">
+      <summary>Where do I get that file?</summary>
+      <ol>
+        <li>On LinkedIn, open <b>Settings &amp; Privacy → Data privacy → Get a copy of your data</b>.</li>
+        <li>Choose <b>Connections</b> (the fast option) and request the archive.</li>
+        <li>When LinkedIn emails you, download and unzip it, then drop <code>Connections.csv</code> here.</li>
+      </ol>
+    </details>
+    <p class="privacy">🔒 Your file never leaves this browser tab. Nothing is uploaded or saved.</p>
+  </section>
+
+  <!-- Game -->
+  <section id="game" class="hidden">
+    <div class="panel">
+      <div class="filters">
+        <div>
+          <label class="f" for="fTitle">Title contains</label>
+          <input type="text" id="fTitle" placeholder="engineer, founder…">
+        </div>
+        <div>
+          <label class="f" for="fCompany">Company contains</label>
+          <input type="text" id="fCompany" list="companies" placeholder="Google, Acme…">
+          <datalist id="companies"></datalist>
+        </div>
+        <div>
+          <label class="f" for="fYear">Connected in</label>
+          <select id="fYear"><option value="">Any year</option></select>
+        </div>
+      </div>
+      <div class="filter-meta">
+        <span class="count" id="count"></span>
+        <label class="toggle"><input type="checkbox" id="skipReached" checked> Skip people I've reached out to</label>
+        <span>
+          <button class="linkish" id="clear">Clear filters</button>
+          &nbsp;·&nbsp;
+          <button class="linkish" id="newFile">New file</button>
+        </span>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="marquee" id="marquee">
+        <div class="marquee-inner">
+          <div class="marquee-label">TODAY'S MYSTERY GUEST</div>
+          <div class="marquee-name" id="marqueeName" aria-live="polite">Who will it be?</div>
+        </div>
+      </div>
+
+      <div class="wheel-wrap" id="wheelWrap">
+        <svg class="pointer" id="pointer" viewBox="0 0 54 64" aria-hidden="true">
+          <path d="M4 6 Q27 -4 50 6 L30 58 Q27 64 24 58 Z" fill="#ff2e93" stroke="#1b1464" stroke-width="4" stroke-linejoin="round"/>
+          <circle cx="27" cy="16" r="6" fill="#fff" stroke="#1b1464" stroke-width="3"/>
+        </svg>
+        <div class="wheel-spin" id="wheelSpin">
+          <svg id="wheel" viewBox="-104 -104 208 208" role="img" aria-label="Prize wheel of challenges"></svg>
+        </div>
+      </div>
+
+      <button class="spin-btn" id="spin">SPIN!</button>
+      <p class="hint">or press <kbd>Space</kbd></p>
+    </div>
+
+    <div id="result"></div>
+
+    <div class="scoreboard">
+      <div class="stat"><strong id="sSpins">0</strong><span>SPINS</span></div>
+      <div class="stat"><strong id="sDone">0</strong><span>REACHED OUT</span></div>
+      <div class="stat"><strong id="sChicken">0</strong><span>CHICKENED OUT</span></div>
+    </div>
+
+    <section class="panel">
+      <div class="list-head">
+        <div>
+          <h2 class="panel-title">🏆 Hall of Fame</h2>
+          <p>Everyone you reached out to. Gone when you close the tab, so copy or download it to keep it.</p>
+        </div>
+        <div class="list-actions">
+          <button class="btn small cyan" id="copyList" disabled>Copy</button>
+          <button class="btn small lime" id="downloadList" disabled>Download CSV</button>
+        </div>
+      </div>
+      <ul class="reached" id="reachedList"></ul>
+      <div class="empty" id="reachedEmpty">No winners yet. Spin, then hit “I did it!” 💌</div>
+    </section>
+
+    <section class="panel shame">
+      <div class="list-head">
+        <div>
+          <h2 class="panel-title">🐔 Chickens of Shame</h2>
+          <p>Everyone you chickened out on. They'll never know… unless you redeem yourself.</p>
+        </div>
+      </div>
+      <ul class="reached" id="chickenList"></ul>
+      <div class="empty" id="chickenEmpty">No chickens yet. Brave soul! 🦁</div>
+    </section>
+  </section>
+</main>
+
+<footer>Made for fun. Not affiliated with LinkedIn.</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  // ---------- State (in memory only) ----------
+  let people = [];
+  let lastPick = null;
+  let spinning = false;
+  let wheelRotation = 0;
+  let currentWedge = null;
+  let reached = []; // { person, wedge, challenge (plain text), at: Date }, newest first
+  let chickened = []; // same shape: people you chickened out on, newest first
+  const score = { spins: 0, done: 0, chicken: 0 };
+
+  const $ = (id) => document.getElementById(id);
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---------- Wheel wedges = challenges ----------
+  // {first} first name · {company} · {aPosition} "an Engineer" · {yearsPhrase} "3 years"
+  const COLORS = ["#ff3b30", "#ffd400", "#00a8e8", "#ff2e93", "#7ee81b", "#8a3ffc", "#ff7a00"];
+  const WEDGES = [
+    { label: "WHAT'S NEW",   tpl: "Tell {first} it's been too long, and ask what's changed for them since you last talked." },
+    { label: "ANNIVERSARY",  tpl: "Congratulate {first} on {yearsPhrase} of being connected. Make it sound like a real anniversary.", needs: "date" },
+    { label: "THROWBACK",    tpl: "Remind {first} of something you did, worked on, or laughed about together, and ask if they remember it too." },
+    { label: "HOT TAKE",     tpl: "Ask {first} for their hottest take about your industry." },
+    { label: "CONGRATS",     tpl: "Look at {first}'s profile, find something recent to congratulate them on (new role, work anniversary, a post), and send a note." },
+    { label: "GOSSIP",       tpl: "Did you hear? Share a good piece of news with {first} about a mutual acquaintance or interest." },
+    { label: "OFFER HELP",   tpl: "Ask {first} what they're working on these days, and whether there's anything you could help with or someone you could introduce them to." },
+    { label: "SAW THIS",     tpl: "Tell {first} something reminded you of them this week, and say what it was." },
+    { label: "YOUR NEWS",    tpl: "Share one real update from your life or work with {first}, and ask for one of theirs in return." },
+    { label: "ORIGIN STORY", tpl: "Write {first} three sentences about how you remember meeting them. Guessing is allowed." },
+    { label: "THANK YOU",    tpl: "Thank {first} for something they did for you (advice, a referral, a good meeting) that you never properly thanked them for." },
+  ].map((w, i) => ({ ...w, color: COLORS[i % COLORS.length], index: i }));
+  const SEG = 360 / WEDGES.length;
+
+  function buildWheel() {
+    const svg = $("wheel");
+    const R = 96;
+    const pt = (deg, r) => {
+      const a = (deg * Math.PI) / 180;
+      return [+(r * Math.sin(a)).toFixed(3), +(-r * Math.cos(a)).toFixed(3)];
+    };
+    let html = `<circle r="103" fill="#1b1464"/><circle r="99" fill="#ffd400"/>`;
+    WEDGES.forEach((w, i) => {
+      const a0 = i * SEG, a1 = (i + 1) * SEG, mid = a0 + SEG / 2;
+      const [x0, y0] = pt(a0, R), [x1, y1] = pt(a1, R);
+      html += `<path d="M0 0 L${x0} ${y0} A${R} ${R} 0 0 1 ${x1} ${y1} Z" fill="${w.color}" stroke="#1b1464" stroke-width="1.6"/>`;
+      html += `<text class="wheel-label" transform="rotate(${mid - 90})" x="90" y="2.4" text-anchor="end">${w.label}</text>`;
+    });
+    // bulbs on the rim
+    const bulbs = 28;
+    for (let i = 0; i < bulbs; i++) {
+      const [x, y] = pt((360 / bulbs) * i + 360 / bulbs / 2, 100.5);
+      html += `<circle class="bulb${i % 2 ? " alt" : ""}" cx="${x}" cy="${y}" r="2.1" stroke="#1b1464" stroke-width=".8"/>`;
+    }
+    html += `<circle r="20" fill="#1b1464"/><circle r="16" fill="#ffd400" stroke="#ff2e93" stroke-width="3"/>`;
+    const star = Array.from({ length: 10 }, (_, k) => pt(k * 36, k % 2 ? 4.5 : 10.5).join(",")).join(" ");
+    html += `<polygon points="${star}" fill="#ff2e93" stroke="#1b1464" stroke-width="1.5" stroke-linejoin="round"/>`;
+    svg.innerHTML = html;
+  }
+
+  // ---------- CSV parsing ----------
+  function parseCSV(text) {
+    const rows = [];
+    let row = [], field = "", inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (inQuotes) {
+        if (c === '"') {
+          if (text[i + 1] === '"') { field += '"'; i++; }
+          else inQuotes = false;
+        } else field += c;
+      } else if (c === '"') inQuotes = true;
+      else if (c === ",") { row.push(field); field = ""; }
+      else if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; }
+      else if (c !== "\r") field += c;
+    }
+    if (field !== "" || row.length) { row.push(field); rows.push(row); }
+    return rows;
+  }
+
+  const MONTHS = { jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11 };
+  function parseDate(s) {
+    if (!s) return null;
+    s = s.trim();
+    const m = s.match(/^(\d{1,2})\s+([A-Za-z]{3})[A-Za-z]*\s+(\d{4})$/); // "15 Mar 2023"
+    if (m && MONTHS[m[2].toLowerCase()] !== undefined) return new Date(+m[3], MONTHS[m[2].toLowerCase()], +m[1]);
+    const d = new Date(s);
+    return isNaN(d) ? null : d;
+  }
+
+  function loadConnections(text) {
+    const rows = parseCSV(text.replace(/^﻿/, ""));
+    const headerIdx = rows.findIndex(r => r.some(c => c.trim().toLowerCase() === "first name"));
+    if (headerIdx === -1) throw new Error("Couldn't find a “First Name” column. Is this the Connections.csv from LinkedIn?");
+    const header = rows[headerIdx].map(h => h.trim().toLowerCase());
+    const col = (name) => header.indexOf(name);
+    const iFirst = col("first name"), iLast = col("last name"), iUrl = col("url"),
+          iCompany = col("company"), iPos = col("position"), iDate = col("connected on");
+
+    const list = [];
+    for (const r of rows.slice(headerIdx + 1)) {
+      const first = (r[iFirst] || "").trim(), last = (r[iLast] || "").trim();
+      if (!first && !last) continue;
+      const date = iDate >= 0 ? parseDate(r[iDate]) : null;
+      list.push({
+        first, last,
+        name: `${first} ${last}`.trim(),
+        url: iUrl >= 0 ? (r[iUrl] || "").trim() : "",
+        company: iCompany >= 0 ? (r[iCompany] || "").trim() : "",
+        position: iPos >= 0 ? (r[iPos] || "").trim() : "",
+        date,
+        year: date ? date.getFullYear() : null,
+      });
+    }
+    if (!list.length) throw new Error("Found the header, but no connections in the file.");
+    return list;
+  }
+
+  // ---------- Filtering ----------
+  function filtered() {
+    const t = $("fTitle").value.trim().toLowerCase();
+    const c = $("fCompany").value.trim().toLowerCase();
+    const y = $("fYear").value;
+    const skip = $("skipReached").checked;
+    return people.filter(p =>
+      (!t || p.position.toLowerCase().includes(t)) &&
+      (!c || p.company.toLowerCase().includes(c)) &&
+      (!y || String(p.year) === y) &&
+      (!skip || !reached.some(r => r.person === p))
+    );
+  }
+
+  function updateCount() {
+    const n = filtered().length;
+    const total = people.length.toLocaleString();
+    $("count").innerHTML = n === people.length
+      ? `<span class="num">${total}</span> on the wheel`
+      : `<span class="num">${n.toLocaleString()}</span> of ${total} on the wheel`;
+    if (n === 0) $("count").innerHTML += " · loosen those filters!";
+    $("spin").disabled = n === 0 || spinning;
+  }
+
+  function populateFilters() {
+    const years = [...new Set(people.map(p => p.year).filter(Boolean))].sort((a, b) => b - a);
+    const sel = $("fYear");
+    sel.innerHTML = '<option value="">Any year</option>';
+    for (const y of years) {
+      const n = people.filter(p => p.year === y).length;
+      sel.insertAdjacentHTML("beforeend", `<option value="${y}">${y} (${n})</option>`);
+    }
+    const counts = {};
+    for (const p of people) if (p.company) counts[p.company] = (counts[p.company] || 0) + 1;
+    const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 200);
+    $("companies").innerHTML = top.map(([c]) => `<option value="${escapeHtml(c)}">`).join("");
+  }
+
+  // ---------- Spinning ----------
+  const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+  function pickPerson(pool) {
+    const options = pool.length > 1 && lastPick ? pool.filter(p => p !== lastPick) : pool;
+    return rand(options);
+  }
+
+  function wedgesFor(p, exclude) {
+    const ok = WEDGES.filter(w =>
+      (w.needs !== "date" || p.date) &&
+      (w.needs !== "position" || p.position) &&
+      (w.needs !== "company" || p.company));
+    const fresh = exclude ? ok.filter(w => w !== exclude) : ok;
+    return fresh.length ? fresh : ok;
+  }
+
+  // Rotate the wheel so `wedge` ends up under the pointer. Resolves when it stops.
+  function spinWheelTo(wedge, fullTurns) {
+    const dur = reducedMotion ? 0.6 : 4.2;
+    const jitter = (Math.random() - 0.5) * SEG * 0.7;
+    const target = -(wedge.index * SEG + SEG / 2 + jitter); // wheel angle that puts wedge at the top
+    const current = ((wheelRotation % 360) + 360) % 360;
+    let delta = ((target - current) % 360 + 360) % 360;
+    wheelRotation += delta + 360 * fullTurns;
+    const el = $("wheelSpin");
+    el.style.setProperty("--dur", dur + "s");
+    el.style.transform = `rotate(${wheelRotation}deg)`;
+    startTicker();
+    return new Promise(res => setTimeout(() => { stopTicker(); res(); }, dur * 1000 + 60));
+  }
+
+  // Wiggle the pointer each time a wedge boundary passes it
+  let tickRaf = null, lastSeg = null;
+  function startTicker() {
+    $("wheelWrap").classList.add("lit");
+    const el = $("wheelSpin"), ptr = $("pointer");
+    const loop = () => {
+      const m = getComputedStyle(el).transform;
+      if (m && m !== "none") {
+        const [a, b] = m.slice(7, -1).split(",").map(Number);
+        const deg = (Math.atan2(b, a) * 180 / Math.PI + 360) % 360;
+        const seg = Math.floor(deg / SEG);
+        if (seg !== lastSeg) {
+          lastSeg = seg;
+          ptr.classList.remove("tick"); void ptr.offsetWidth; ptr.classList.add("tick");
+        }
+      }
+      tickRaf = requestAnimationFrame(loop);
+    };
+    tickRaf = requestAnimationFrame(loop);
+  }
+  function stopTicker() {
+    cancelAnimationFrame(tickRaf);
+    $("wheelWrap").classList.remove("lit");
+  }
+
+  // Flicker random names on the marquee, slowing down, then land on the winner
+  function rollMarquee(pool, winner, ms) {
+    const nameEl = $("marqueeName"), box = $("marquee");
+    box.classList.add("spinning");
+    const start = performance.now();
+    return new Promise(res => {
+      const step = () => {
+        const t = (performance.now() - start) / ms;
+        if (t >= 1) {
+          nameEl.textContent = winner.name;
+          box.classList.remove("spinning");
+          return res();
+        }
+        nameEl.textContent = rand(pool).name;
+        setTimeout(step, 50 + Math.pow(t, 3) * 320);
+      };
+      step();
+    });
+  }
+
+  async function spin() {
+    const pool = filtered();
+    if (!pool.length || spinning) return;
+    spinning = true;
+    $("spin").disabled = true;
+    $("result").innerHTML = "";
+
+    const winner = pickPerson(pool);
+    const wedge = rand(wedgesFor(winner));
+    const dur = reducedMotion ? 600 : 4200;
+    await Promise.all([spinWheelTo(wedge, 5), rollMarquee(pool, winner, dur - 300)]);
+
+    spinning = false;
+    lastPick = winner;
+    currentWedge = wedge;
+    score.spins++;
+    renderScore();
+    renderCard(winner, wedge);
+    updateCount();
+  }
+
+  async function respinChallenge(p) {
+    if (spinning) return;
+    spinning = true;
+    $("spin").disabled = true;
+    document.querySelectorAll(".card button").forEach(b => b.disabled = true);
+    const wedge = rand(wedgesFor(p, currentWedge));
+    await spinWheelTo(wedge, 2);
+    spinning = false;
+    currentWedge = wedge;
+    renderCard(p, wedge, true);
+    updateCount();
+  }
+
+  // ---------- Challenge text ----------
+  const yearsSince = (d) => d ? Math.floor((Date.now() - d.getTime()) / (365.25 * 24 * 3600 * 1000)) : null;
+  const article = (w) => /^[aeiou]/i.test(w) ? "an" : "a";
+  const roleOf = (p) => [p.position, p.company].filter(Boolean).join(" @ ");
+
+  function fillChallenge(p, wedge) {
+    const y = yearsSince(p.date);
+    const vals = {
+      first: p.first || p.name,
+      company: p.company,
+      aPosition: p.position ? `${article(p.position)} ${p.position}` : "",
+      yearsPhrase: y === null ? "" : y < 1 ? "less than a year" : y === 1 ? "one whole year" : `${y} years`,
+    };
+    const text = wedge.tpl.replace(/\{(\w+)\}/g, (_, k) => vals[k]);
+    const html = escapeHtml(wedge.tpl).replace(/\{(\w+)\}/g, (_, k) =>
+      k === "first" ? `<strong>${escapeHtml(vals.first)}</strong>` : escapeHtml(vals[k]));
+    return { text, html };
+  }
+
+  function wedgeTag(w) {
+    return `<span class="wedge-tag" style="background:${w.color}">${escapeHtml(w.label)}</span>`;
+  }
+
+  function renderCard(p, wedge, quiet) {
+    const challenge = fillChallenge(p, wedge);
+    const since = p.date
+      ? `Connected ${p.date.toLocaleDateString(undefined, { month: "long", year: "numeric" })}`
+      : "Connected sometime, somewhere";
+    const burst = rand(["WINNER!", "BIG<br>SPIN!", "BONUS<br>ROUND!", "YOU'RE<br>UP!"]);
+    $("result").innerHTML = `
+      <article class="panel card"${quiet ? ' style="animation:none"' : ""}>
+        <div class="starburst" aria-hidden="true">${burst}</div>
+        <div class="eyebrow">YOUR MYSTERY GUEST</div>
+        <h2>${escapeHtml(p.name)}</h2>
+        <p class="role">${escapeHtml(roleOf(p) || "Mystery professional")}</p>
+        <p class="since">${since}</p>
+        <div class="challenge">${wedgeTag(wedge)}<div>${challenge.html}</div></div>
+        <div class="actions">
+          ${p.url ? `<a class="btn cyan" href="${escapeAttr(p.url)}" target="_blank" rel="noopener">Open profile ↗</a>` : ""}
+          <button class="btn lime" id="did">I did it! 🎉</button>
+          <button class="btn yellow" id="newChallenge">Spin for a new challenge</button>
+          <button class="btn" id="chicken">Chicken out 🐔</button>
+        </div>
+      </article>`;
+    $("did").onclick = () => {
+      score.done++;
+      reached.unshift({ person: p, wedge, challenge: challenge.text, at: new Date() });
+      // Redemption: doing it clears them from the Chickens of Shame
+      const before = chickened.length;
+      chickened = chickened.filter(c => c.person !== p);
+      score.chicken = Math.max(0, score.chicken - (before - chickened.length));
+      renderScore(); renderReached(); renderChickens(); updateCount();
+      confetti();
+      toast(`Ding ding ding! ${p.first || "They"} just got a message.`);
+      $("result").innerHTML = "";
+      $("marqueeName").textContent = "Who's next?";
+    };
+    $("chicken").onclick = () => {
+      score.chicken++;
+      if (!chickened.some(c => c.person === p)) {
+        chickened.unshift({ person: p, wedge, challenge: challenge.text, at: new Date() });
+      } else score.chicken--; // same person twice only counts once
+      renderScore(); renderChickens();
+      chickenRain();
+      toast("Bawk bawk! Spinning again…");
+      spin();
+    };
+    $("newChallenge").onclick = () => respinChallenge(p);
+    if (!quiet) $("result").firstElementChild.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "nearest" });
+  }
+
+  function renderScore() {
+    $("sSpins").textContent = score.spins;
+    $("sDone").textContent = score.done;
+    $("sChicken").textContent = score.chicken;
+  }
+
+  // ---------- Hall of fame + Chickens of shame ----------
+  function listItems(list, extraButton) {
+    return list.map((r, i) => {
+      const p = r.person;
+      const time = r.at.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+      const name = p.url
+        ? `<a href="${escapeAttr(p.url)}" target="_blank" rel="noopener">${escapeHtml(p.name)}</a>`
+        : escapeHtml(p.name);
+      return `
+        <li>
+          <div class="who">
+            <b>${name}</b>
+            <div class="meta">${escapeHtml(roleOf(p) || "Mystery professional")} · ${time}</div>
+            <div class="what">${wedgeTag(r.wedge)}${escapeHtml(r.challenge)}</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            ${extraButton ? extraButton(i) : ""}
+            <button class="remove" data-i="${i}" title="Remove from list" aria-label="Remove ${escapeHtml(p.name)} from list">✕</button>
+          </div>
+        </li>`;
+    }).join("");
+  }
+
+  function renderReached() {
+    $("reachedEmpty").classList.toggle("hidden", reached.length > 0);
+    $("copyList").disabled = $("downloadList").disabled = reached.length === 0;
+    $("reachedList").innerHTML = listItems(reached);
+  }
+
+  function renderChickens() {
+    $("chickenEmpty").classList.toggle("hidden", chickened.length > 0);
+    $("chickenList").innerHTML = listItems(chickened,
+      (i) => `<button class="btn small yellow redeem" data-i="${i}">Redeem</button>`);
+  }
+
+  $("chickenList").addEventListener("click", e => {
+    const redeem = e.target.closest(".redeem");
+    const remove = e.target.closest(".remove");
+    if (redeem) {
+      if (spinning) return;
+      const c = chickened[+redeem.dataset.i];
+      currentWedge = c.wedge;
+      lastPick = c.person;
+      $("marqueeName").textContent = c.person.name;
+      renderCard(c.person, c.wedge);
+      toast(`Second chance with ${c.person.first || c.person.name}!`);
+    } else if (remove) {
+      chickened.splice(+remove.dataset.i, 1);
+      score.chicken = Math.max(0, score.chicken - 1);
+      renderScore(); renderChickens();
+    }
+  });
+
+  $("reachedList").addEventListener("click", e => {
+    const btn = e.target.closest(".remove");
+    if (!btn) return;
+    reached.splice(+btn.dataset.i, 1);
+    score.done = Math.max(0, score.done - 1);
+    renderScore(); renderReached(); updateCount();
+  });
+
+  $("copyList").onclick = async () => {
+    const text = reached.slice().reverse().map(r =>
+      `${r.person.name}${roleOf(r.person) ? ` (${roleOf(r.person)})` : ""}${r.person.url ? ` - ${r.person.url}` : ""}\n  [${r.wedge.label}] ${r.challenge}`
+    ).join("\n");
+    try { await navigator.clipboard.writeText(text); toast("Copied to clipboard! 📋"); }
+    catch { toast("Couldn't copy. Try Download CSV instead."); }
+  };
+
+  $("downloadList").onclick = () => {
+    const q = (s) => `"${String(s ?? "").replace(/"/g, '""')}"`;
+    const lines = [["Name", "Position", "Company", "Profile URL", "Challenge type", "Challenge", "Reached out at"].map(q).join(",")];
+    for (const r of reached.slice().reverse()) {
+      const p = r.person;
+      lines.push([p.name, p.position, p.company, p.url, r.wedge.label, r.challenge, r.at.toISOString()].map(q).join(","));
+    }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/csv" }));
+    a.download = `linkedin-roulette-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+
+  // ---------- Fun bits ----------
+  function confetti() {
+    if (reducedMotion) return;
+    const colors = ["#ffd400", "#ff2e93", "#00c8f0", "#7ee81b", "#ff7a00", "#ffffff"];
+    for (let i = 0; i < 90; i++) {
+      const el = document.createElement("div");
+      el.className = "confetti";
+      const size = 8 + Math.random() * 8;
+      el.style.left = Math.random() * 100 + "vw";
+      el.style.width = size + "px";
+      el.style.height = (i % 4 === 0 ? size : size * 0.5) + "px";
+      el.style.background = colors[i % colors.length];
+      el.style.border = "2px solid #1b1464";
+      el.style.borderRadius = i % 3 === 0 ? "50%" : "2px";
+      el.style.animationDuration = 1.6 + Math.random() * 1.6 + "s";
+      el.style.animationDelay = Math.random() * 0.3 + "s";
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3800);
+    }
+  }
+
+  function chickenRain() {
+    const count = reducedMotion ? 0 : 45;
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement("div");
+      el.className = "chicken-drop";
+      el.textContent = Math.random() < 0.15 ? "🐣" : "🐔";
+      el.style.left = Math.random() * 100 + "vw";
+      el.style.fontSize = 14 + Math.random() * 14 + "px";
+      el.style.animationDuration = 1.8 + Math.random() * 1.8 + "s";
+      el.style.animationDelay = Math.random() * 0.6 + "s";
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 4400);
+    }
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function escapeAttr(s) { return /^https?:\/\//i.test(s) ? escapeHtml(s) : "#"; }
+
+  // ---------- File handling ----------
+  function handleFile(file) {
+    if (!file) return;
+    const err = $("error");
+    err.classList.add("hidden");
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        people = loadConnections(reader.result);
+        lastPick = null;
+        reached = [];
+        chickened = [];
+        Object.assign(score, { spins: 0, done: 0, chicken: 0 });
+        renderScore(); renderReached(); renderChickens();
+        populateFilters();
+        $("upload").classList.add("hidden");
+        $("game").classList.remove("hidden");
+        $("result").innerHTML = "";
+        $("marqueeName").textContent = "Who will it be?";
+        updateCount();
+        toast(`${people.length.toLocaleString()} contestants loaded! Let's play!`);
+      } catch (e) {
+        err.textContent = e.message;
+        err.classList.remove("hidden");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  buildWheel();
+
+  const drop = $("drop");
+  $("file").addEventListener("change", e => handleFile(e.target.files[0]));
+  ["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop", e => handleFile(e.dataTransfer.files[0]));
+
+  ["fTitle", "fCompany"].forEach(id => $(id).addEventListener("input", updateCount));
+  $("fYear").addEventListener("change", updateCount);
+  $("skipReached").addEventListener("change", updateCount);
+  $("clear").onclick = () => { $("fTitle").value = ""; $("fCompany").value = ""; $("fYear").value = ""; updateCount(); };
+  $("newFile").onclick = () => {
+    if ((reached.length || chickened.length) && !confirm("Loading a new file clears your Hall of Fame and Chickens of Shame. Continue?")) return;
+    people = [];
+    $("file").value = "";
+    $("game").classList.add("hidden");
+    $("upload").classList.remove("hidden");
+  };
+  $("spin").onclick = spin;
+  document.addEventListener("keydown", e => {
+    if (e.code === "Space" && !$("game").classList.contains("hidden") && !/INPUT|SELECT|TEXTAREA|BUTTON|^A$/.test(document.activeElement.tagName)) {
+      e.preventDefault(); spin();
+    }
+  });
+})();
+</script>
+</body>
+</html>
