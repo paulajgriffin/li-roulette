@@ -343,9 +343,16 @@
   .shame .reached li:nth-child(odd) { background: #fff; }
   .shame .reached li:nth-child(even) { background: #ffd1e8; }
   .shame .empty { border-color: var(--pink); }
-  .chicken-drop {
-    position: fixed; top: -30px; z-index: 15; pointer-events: none; line-height: 1;
-    animation: fall linear forwards;
+  /* Chickens running across the screen (right to left, the way 🐓 faces) */
+  .chicken-run {
+    position: fixed; left: 100%; z-index: 15; pointer-events: none; line-height: 1;
+    animation: run linear forwards;
+  }
+  .chicken-run span { display: inline-block; animation: hop .26s ease-in-out infinite alternate; }
+  @keyframes run { to { transform: translateX(calc(-100vw - 100%)); } }
+  @keyframes hop {
+    from { transform: translateY(0) rotate(-8deg); }
+    to   { transform: translateY(-20px) rotate(6deg); }
   }
 
   .empty {
@@ -858,9 +865,10 @@ Radia,Perlman,,,Google,Founder & Engineer,23 May 2024`;
         chickened.unshift({ person: p, wedge, challenge: challenge.text, at: new Date() });
       } else score.chicken--; // same person twice only counts once
       renderScore(); renderChickens();
-      chickenRain();
-      toast("Bawk bawk! Spinning again…");
-      spin();
+      chickenRun();
+      toast("Bawk bawk! Spin again when you're ready.");
+      $("result").innerHTML = "";
+      $("marqueeName").textContent = "Who's next?";
     };
     $("newChallenge").onclick = () => respinChallenge(p);
     if (!quiet) $("result").firstElementChild.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "nearest" });
@@ -976,18 +984,22 @@ Radia,Perlman,,,Google,Founder & Engineer,23 May 2024`;
     }
   }
 
-  function chickenRain() {
-    const count = reducedMotion ? 0 : 45;
+  function chickenRun() {
+    if (reducedMotion) return;
+    const count = 4 + Math.floor(Math.random() * 3); // 4–6 chickens
     for (let i = 0; i < count; i++) {
       const el = document.createElement("div");
-      el.className = "chicken-drop";
-      el.textContent = Math.random() < 0.15 ? "🐣" : "🐔";
-      el.style.left = Math.random() * 100 + "vw";
-      el.style.fontSize = 14 + Math.random() * 14 + "px";
-      el.style.animationDuration = 1.8 + Math.random() * 1.8 + "s";
-      el.style.animationDelay = Math.random() * 0.6 + "s";
+      el.className = "chicken-run";
+      el.innerHTML = "<span>🐓</span>";
+      el.style.bottom = 8 + Math.random() * 34 + "vh";
+      el.style.fontSize = 64 + Math.random() * 28 + "px"; // 64–92px
+      const dur = 1.8 + Math.random() * 1.2;
+      const delay = i * 0.25 + Math.random() * 0.3;
+      el.style.animationDuration = dur + "s";
+      el.style.animationDelay = delay + "s";
+      el.firstChild.style.animationDelay = -Math.random() + "s"; // out of step with each other
       document.body.appendChild(el);
-      setTimeout(() => el.remove(), 4400);
+      setTimeout(() => el.remove(), (dur + delay) * 1000 + 200);
     }
   }
 
