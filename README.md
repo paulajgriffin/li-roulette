@@ -1,6 +1,6 @@
 # LinkedIn Roulette 🎡
 
-A silly 90s-game-show-style web app for reconnecting with your LinkedIn network.
+A silly web app for reconnecting with your LinkedIn network.
 
 Load your `Connections.csv`, spin the wheel, and get challenged to reach out to a random connection with a prompt like **THROWBACK**, **CONGRATS**, or **GOSSIP**.
 
