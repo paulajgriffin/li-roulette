@@ -441,8 +441,7 @@
         </div>
         <div>
           <label class="f" for="fCompany">Company contains</label>
-          <input type="text" id="fCompany" list="companies" placeholder="Google, Acme…">
-          <datalist id="companies"></datalist>
+          <input type="text" id="fCompany" placeholder="goog, nasa, labs…" autocomplete="off">
         </div>
         <div>
           <label class="f" for="fYear">Connected in</label>
@@ -698,10 +697,6 @@ Radia,Perlman,,,Google,Founder & Engineer,23 May 2024`;
       const n = people.filter(p => p.year === y).length;
       sel.insertAdjacentHTML("beforeend", `<option value="${y}">${y} (${n})</option>`);
     }
-    const counts = {};
-    for (const p of people) if (p.company) counts[p.company] = (counts[p.company] || 0) + 1;
-    const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 200);
-    $("companies").innerHTML = top.map(([c]) => `<option value="${escapeHtml(c)}">`).join("");
   }
 
   // ---------- Spinning ----------
