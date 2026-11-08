@@ -374,6 +374,18 @@
   }
   .toast.show { transform: translate(-50%, 0); }
   .confetti { position: fixed; top: -20px; z-index: 15; pointer-events: none; animation: fall linear forwards; }
+  .confetti.tada { top: -50px; line-height: 1; }
+  .celebrate-stamp {
+    position: fixed; left: 50%; top: 42%; z-index: 25; pointer-events: none;
+    font-family: var(--display); font-size: clamp(2.4rem, 7vw, 4.8rem); line-height: 1;
+    white-space: nowrap;
+    color: var(--yellow);
+    -webkit-text-stroke: 2px var(--ink);
+    paint-order: stroke fill;
+    text-shadow:
+      2px 2px 0 var(--pink), 4px 4px 0 var(--pink), 6px 6px 0 var(--pink),
+      8px 8px 0 var(--ink), 10px 10px 18px rgba(0,0,0,.4);
+  }
   @keyframes fall { to { transform: translateY(110vh) rotate(900deg); } }
 
   footer {
@@ -862,8 +874,8 @@ Radia,Perlman,,,Google,Founder & Engineer,23 May 2024`;
       chickened = chickened.filter(c => c.person !== p);
       score.chicken = Math.max(0, score.chicken - (before - chickened.length));
       renderScore(); renderReached(); renderChickens(); updateCount();
-      confetti();
-      toast(`Ding ding ding! ${p.first || "They"} just got a message.`);
+      celebrate();
+      toast(`🎉 Ding ding ding! ${p.first || "They"} just got a message! 🎉`);
       $("result").innerHTML = "";
       $("marqueeName").textContent = "Who's next?";
     };
@@ -972,24 +984,113 @@ Radia,Perlman,,,Google,Founder & Engineer,23 May 2024`;
   };
 
   // ---------- Fun bits ----------
-  function confetti() {
-    if (reducedMotion) return;
-    const colors = ["#ffd400", "#ff2e93", "#00c8f0", "#7ee81b", "#ff7a00", "#ffffff"];
-    for (let i = 0; i < 90; i++) {
-      const el = document.createElement("div");
-      el.className = "confetti";
-      const size = 8 + Math.random() * 8;
+  // ---------- "I did it!" celebration ----------
+  const PARTY_COLORS = ["#ffd400", "#ff2e93", "#00c8f0", "#7ee81b", "#ff7a00", "#ffffff", "#8a3ffc"];
+
+  function confettiPiece(i) {
+    const el = document.createElement("div");
+    el.className = "confetti";
+    const size = 8 + Math.random() * 10;
+    el.style.width = size + "px";
+    el.style.height = (i % 4 === 0 ? size : size * 0.5) + "px";
+    el.style.background = PARTY_COLORS[i % PARTY_COLORS.length];
+    el.style.border = "2px solid #1b1464";
+    el.style.borderRadius = i % 3 === 0 ? "50%" : "2px";
+    return el;
+  }
+
+  // Confetti (and the odd 🎉) falling from the top, in two waves
+  function confettiRain() {
+    for (let i = 0; i < 180; i++) {
+      const tada = i % 12 === 0;
+      const el = tada ? document.createElement("div") : confettiPiece(i);
+      if (tada) { el.className = "confetti tada"; el.textContent = "🎉"; el.style.fontSize = 26 + Math.random() * 18 + "px"; }
       el.style.left = Math.random() * 100 + "vw";
-      el.style.width = size + "px";
-      el.style.height = (i % 4 === 0 ? size : size * 0.5) + "px";
-      el.style.background = colors[i % colors.length];
-      el.style.border = "2px solid #1b1464";
-      el.style.borderRadius = i % 3 === 0 ? "50%" : "2px";
-      el.style.animationDuration = 1.6 + Math.random() * 1.6 + "s";
-      el.style.animationDelay = Math.random() * 0.3 + "s";
+      const dur = 2 + Math.random() * 2;
+      const delay = (i < 110 ? 0 : 0.7) + Math.random() * 0.4;
+      el.style.animationDuration = dur + "s";
+      el.style.animationDelay = delay + "s";
       document.body.appendChild(el);
-      setTimeout(() => el.remove(), 3800);
+      setTimeout(() => el.remove(), (dur + delay) * 1000 + 200);
     }
+  }
+
+  // Confetti fired up from both bottom corners, arcing back down
+  function confettiCannons() {
+    const W = innerWidth, H = innerHeight, g = 1400;
+    [0, 1].forEach(side => {
+      for (let i = 0; i < 70; i++) {
+        const el = i % 10 === 0 ? Object.assign(document.createElement("div"), { textContent: "🎉" }) : confettiPiece(i);
+        el.className = ""; // moved by el.animate below, not the falling CSS animation
+        if (el.textContent) { el.style.fontSize = "30px"; el.style.lineHeight = 1; }
+        el.style.position = "fixed";
+        el.style.left = (side ? W - 20 : 0) + "px";
+        el.style.top = H + "px";
+        el.style.zIndex = 16;
+        el.style.pointerEvents = "none";
+        const dir = side ? -1 : 1;
+        const vx = dir * (250 + Math.random() * 550);
+        const vy = -(H * 1.1 + Math.random() * H * 0.6);
+        const spin = (Math.random() - 0.5) * 1440;
+        const T = 2.2 + Math.random() * 0.8;
+        const frames = [];
+        for (let k = 0; k <= 12; k++) {
+          const t = (k / 12) * T;
+          frames.push({ transform: `translate(${vx * t}px, ${vy * t + 0.5 * g * t * t}px) rotate(${spin * k / 12}deg)` });
+        }
+        document.body.appendChild(el);
+        el.animate(frames, { duration: T * 1000, delay: Math.random() * 250, easing: "linear", fill: "both" })
+          .onfinish = () => el.remove();
+      }
+    });
+  }
+
+  // 🎉 bursting outward from the middle of the screen
+  function tadaBurst() {
+    const cx = innerWidth / 2, cy = innerHeight * 0.42, n = 16;
+    for (let i = 0; i < n; i++) {
+      const el = document.createElement("div");
+      el.textContent = "🎉";
+      Object.assign(el.style, {
+        position: "fixed", left: cx + "px", top: cy + "px", zIndex: 24, pointerEvents: "none",
+        fontSize: 40 + Math.random() * 30 + "px", lineHeight: 1,
+      });
+      const a = (i / n) * Math.PI * 2 + Math.random() * 0.3;
+      const r = 180 + Math.random() * Math.min(innerWidth, innerHeight) * 0.3;
+      const dx = Math.cos(a) * r, dy = Math.sin(a) * r;
+      // point each popper outward from the centre
+      const rot = (a * 180 / Math.PI) + 45;
+      document.body.appendChild(el);
+      el.animate([
+        { transform: `translate(-50%,-50%) scale(.2) rotate(${rot}deg)`, opacity: 0 },
+        { transform: `translate(calc(-50% + ${dx * .7}px), calc(-50% + ${dy * .7}px)) scale(1.2) rotate(${rot}deg)`, opacity: 1, offset: .35 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy + 60}px)) scale(1) rotate(${rot + 20}deg)`, opacity: 0 },
+      ], { duration: 1500 + Math.random() * 500, delay: 150, easing: "cubic-bezier(.15,.8,.3,1)", fill: "both" })
+        .onfinish = () => el.remove();
+    }
+  }
+
+  // Big "YOU DID IT!" stamp in the middle of the screen
+  function celebrateStamp() {
+    const el = document.createElement("div");
+    el.className = "celebrate-stamp";
+    el.textContent = `🎉 ${rand(["YOU DID IT!", "LEGEND!", "BIG WIN!", "NETWORK HERO!", "DING DING DING!"])} 🎉`;
+    document.body.appendChild(el);
+    el.animate([
+      { transform: "translate(-50%,-50%) scale(.2) rotate(-20deg)", opacity: 0 },
+      { transform: "translate(-50%,-50%) scale(1.18) rotate(-5deg)", opacity: 1, offset: .18 },
+      { transform: "translate(-50%,-50%) scale(1) rotate(-4deg)", opacity: 1, offset: .3 },
+      { transform: "translate(-50%,-50%) scale(1.04) rotate(-3deg)", opacity: 1, offset: .75 },
+      { transform: "translate(-50%,-50%) scale(1.4) rotate(-3deg)", opacity: 0 },
+    ], { duration: 2400, easing: "ease-out", fill: "both" }).onfinish = () => el.remove();
+  }
+
+  function celebrate() {
+    if (reducedMotion) return;
+    celebrateStamp();
+    tadaBurst();
+    confettiCannons();
+    confettiRain();
   }
 
   function chickenRun() {
